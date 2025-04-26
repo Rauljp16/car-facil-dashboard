@@ -1,60 +1,175 @@
 <template>
     <section class="w-full h-screen bg-neutral-100 p-4">
-        <div class="w-full flex flex-col gap-4 bg-white p-4 ">
+        <div class="w-full flex flex-col gap-4 bg-white p-4">
             <div class="relative">
-                <h1 class="text-2xl font-semibold text-center py-2">Añadir coche nuevo</h1>
+                <h1 class="text-2xl font-semibold text-center py-2">
+                    Añadir coche nuevo
+                </h1>
                 <img src="/svg/back.svg" @click="atras" class="absolute top-0 right-0 w-5 cursor-pointer" />
             </div>
             <form @submit.prevent="createCar" class="flex flex-col gap-4 items-center">
-                <div class="flex w-full items-center justify-between gap-4">
-                    <div>
-                        <label class="block mb-1 text-sm pl-1">Marca</label>
-                        <input v-model="marca" type="text" placeholder="Marca..."
-                            class="w-full p-2 rounded border border-neutral-300" required />
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-sm pl-1">Modelo</label>
-                        <input v-model="modelo" type="text" placeholder="Modelo..."
-                            class="w-full p-2 rounded border border-neutral-300" required />
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">Marca</label>
+                    <input v-model="marca" type="text" placeholder="Marca..."
+                        class="w-full p-2 rounded border border-neutral-300" required />
+                </div>
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">Modelo</label>
+                    <input v-model="modelo" type="text" placeholder="Modelo..."
+                        class="w-full p-2 rounded border border-neutral-300" required />
+                </div>
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">Combustible</label>
+                    <select v-model="Combustible" class="w-full p-2 rounded border border-neutral-300" required>
+                        <option disabled value="">Selecciona combustible</option>
+                        <option value="Diésel">Diésel</option>
+                        <option value="Gasolina">Gasolina</option>
+                        <option value="Híbrido">Híbrido</option>
+                        <option value="Eléctrico">Eléctrico</option>
+                    </select>
+                </div>
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">Cambio</label>
+                    <select v-model="Cambio" class="w-full p-2 rounded border border-neutral-300" required>
+                        <option disabled value="">Selecciona Cambio</option>
+                        <option value="Manual">Manual</option>
+                        <option value="Automático">Automático</option>
+                    </select>
+                </div>
+
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">Año</label>
+                    <input v-model.number="anio" type="number" placeholder="Año..."
+                        class="w-full p-2 rounded border border-neutral-300" required />
+                </div>
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">CV</label>
+                    <input v-model.number="cv" type="number" placeholder="CV..."
+                        class="w-full p-2 rounded border border-neutral-300" required />
+                </div>
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">Precio</label>
+                    <input v-model.number="precio" type="number" placeholder="Precio..."
+                        class="w-full p-2 rounded border border-neutral-300" required />
+                </div>
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">Puertas</label>
+                    <input v-model.number="puertas" type="number" placeholder="Puertas..."
+                        class="w-full p-2 rounded border border-neutral-300" required />
+                </div>
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">Motor</label>
+                    <input v-model.number="motor" type="number" placeholder="Motor..."
+                        class="w-full p-2 rounded border border-neutral-300" required />
+                </div>
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">Plazas</label>
+                    <input v-model.number="plazas" type="number" placeholder="Plazas..."
+                        class="w-full p-2 rounded border border-neutral-300" required />
+                </div>
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">KM</label>
+                    <input v-model.number="km" type="number" placeholder="KM..."
+                        class="w-full p-2 rounded border border-neutral-300" required />
+                </div>
+                <div class="w-full">
+                    <label class="block mb-1 text-sm pl-1">Imágenes</label>
+                    <input type="file" accept="image/*" multiple @change="uploadToCloudinary"
+                        class="w-full p-2 rounded border border-neutral-300 bg-white" />
+                </div>
+
+                <!-- Vista previa -->
+                <div class="flex flex-wrap gap-2 mt-4 w-full">
+                    <div v-for="(url, index) in imagenes" :key="index"
+                        class="w-24 h-24 rounded overflow-hidden border border-neutral-300">
+                        <img :src="url" class="w-full h-full object-cover" />
                     </div>
                 </div>
-                <div class="flex w-full items-center justify-between gap-4">
-                    <div>
-                        <label class="block mb-1 text-sm pl-1">Año</label>
-                        <input v-model.number="anio" type="number" placeholder="Año..."
-                            class="w-full p-2 rounded border border-neutral-300" required />
-                    </div>
-                    <div>
-                        <label class="block mb-1 text-sm pl-1">Precio</label>
-                        <input v-model.number="precio" type="number" placeholder="Precio..."
-                            class="w-full p-2 rounded border border-neutral-300" required />
-                    </div>
-                </div>
-                <button type="submit" class="w-2/3 bg-green-500 rounded py-2 text-white">Crear</button>
+
+                <button type="submit" class="w-2/3 bg-green-500 rounded py-2 text-white">
+                    Crear
+                </button>
             </form>
         </div>
     </section>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 
-const name = ref('');
-// const { getToken } = useAuth();
-// const router = useRouter();
+const marca = ref('')
+const modelo = ref('')
+const Combustible = ref('')
+const Cambio = ref('')
+const anio = ref('')
+const cv = ref('')
+const precio = ref('')
+const puertas = ref('')
+const motor = ref('')
+const plazas = ref('')
+const km = ref('')
+const imagenes = ref([])
 
 const atras = () => {
-    navigateTo("/dashboard");
+    navigateTo('/dashboard')
 }
 
-// const createCar = async () => {
-//     await fetch('https://api.example.com/cars', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             Authorization: `Bearer ${getToken()}`
-//         },
-//         body: JSON.stringify({ name: name.value })
-//     });
-//     router.push('/dashboard');
-// };
+// SUBIR IMÁGENES A CLOUDINARY CON FETCH
+const uploadToCloudinary = async (event) => {
+    const files = Array.from(event.target.files)
+
+    for (const file of files) {
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('upload_preset', 'TU_UPLOAD_PRESET') // ← cambia esto
+        formData.append('cloud_name', 'TU_CLOUD_NAME')       // ← cambia esto
+
+        try {
+            const response = await fetch(
+                'https://api.cloudinary.com/v1_1/TU_CLOUD_NAME/image/upload',
+                {
+                    method: 'POST',
+                    body: formData
+                }
+            )
+            const data = await response.json()
+            imagenes.value.push(data.secure_url)
+        } catch (error) {
+            console.error('Error al subir imagen:', error)
+        }
+    }
+}
+
+// ENVÍO DE DATOS DEL FORMULARIO (INCLUYE IMÁGENES)
+const createCar = async () => {
+    const cocheData = {
+        marca: marca.value,
+        modelo: modelo.value,
+        combustible: Combustible.value,
+        cambio: Cambio.value,
+        anio: anio.value,
+        cv: cv.value,
+        precio: precio.value,
+        puertas: puertas.value,
+        motor: motor.value,
+        plazas: plazas.value,
+        km: km.value,
+        imagenes: imagenes.value, // array de URLs
+    }
+
+    try {
+        await fetch('https://api.example.com/cars', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Authorization: `Bearer ${getToken()}`
+            },
+            body: JSON.stringify(cocheData)
+        })
+
+        navigateTo('/dashboard')
+    } catch (error) {
+        console.error('Error al crear coche:', error)
+    }
+}
 </script>
