@@ -13,29 +13,29 @@
 
         <section class="flex flex-col gap-4">
             <article v-for="coche in cochesFiltrados" :key="coche.id"
-                class="flex w-full h-24 bg-white items-center justify-between gap-2 my-0 p-2 rounded shadow-sm shadow-neutral-500">
-                <div class="w-28 h-20">
+                class="flex w-full h-24 bg-white items-center justify-between gap-2 my-0 p-2 rounded shadow-sm shadow-neutral-500 cursor-pointer hover:bg-neutral-50 transition-colors"
+                @click="verDetalles(coche.id)">
+                <div class="w-28 h-20" @click.stop>
                     <img :src="coche.images[0]" alt="Imagen del coche" class="w-full h-full rounded cursor-pointer"
                         @click="openImage(coche.images[0])" />
                 </div>
-                <div class="w-full h-full flex flex-col justify-between p-2">
-                    <div class="flex items-center justify-between">
-                        <h2 class="font-semibold text-green-600">{{ coche.marca }} {{ coche.modelo }}</h2>
-                        <p class="text-sm text-red-500">{{ coche.precio }} €</p>
+
+                <div class="flex items-center justify-between">
+                    <h2 class="font-semibold text-green-600">{{ coche.marca }} {{ coche.modelo }}</h2>
+                    <p class="text-sm text-red-500">{{ coche.precio }} €</p>
+                </div>
+                <div class="w-full flex gap-4">
+                    <div class="flex gap-[2px]">
+                        <img src="/svg/calendar.svg" alt="svg de calendario" class="w-4" />
+                        <p class="text-sm">{{ coche.anio }}</p>
                     </div>
-                    <div class="w-full flex gap-4">
-                        <div class="flex gap-[2px]">
-                            <img src="/svg/calendar.svg" alt="svg de calendario" class="w-4" />
-                            <p class="text-sm">{{ coche.anio }}</p>
-                        </div>
-                        <div class="flex gap-[2px]">
-                            <img src="/svg/kmBlack.svg" alt="svg de calendario" class="w-4" />
-                            <p class="text-sm">{{ coche.km.toLocaleString() }}</p>
-                        </div>
-                        <div class="flex gap-[2px]">
-                            <img src="/svg/bolt.svg" alt="svg de calendario" class="w-4" />
-                            <p class="text-sm">{{ formatNumber.format(Number(coche.motor)) }}</p>
-                        </div>
+                    <div class="flex gap-[2px]">
+                        <img src="/svg/kmBlack.svg" alt="svg de calendario" class="w-4" />
+                        <p class="text-sm">{{ coche.km.toLocaleString() }}</p>
+                    </div>
+                    <div class="flex gap-[2px]">
+                        <img src="/svg/bolt.svg" alt="svg de calendario" class="w-4" />
+                        <p class="text-sm">{{ formatNumber.format(Number(coche.motor)) }}</p>
                     </div>
                 </div>
             </article>
@@ -50,8 +50,10 @@
 </template>
 
 <script setup>
-const { get } = useApi();
-const coches = ref([]);
+import { ref, computed, onMounted } from 'vue';
+import { useCars } from '~/composables/useCars';
+
+const { cars, loadCars } = useCars();
 const filtro = ref("");
 const imagenAmpliada = ref(null);
 const formatNumber = new Intl.NumberFormat("es-ES", {
@@ -60,18 +62,8 @@ const formatNumber = new Intl.NumberFormat("es-ES", {
     maximumFractionDigits: 0,
 });
 
-
-const fetchData = async () => {
-    try {
-        const data = await get('/coches');
-        coches.value = data;
-    } catch (error) {
-
-    }
-};
-
 const cochesFiltrados = computed(() =>
-    coches.value.filter(coche =>
+    cars.value.filter(coche =>
         `${coche.marca} ${coche.modelo}`.toLowerCase().includes(filtro.value.toLowerCase())
     )
 );
@@ -80,11 +72,15 @@ const crearCoche = () => {
     navigateTo("/dashboard/create")
 }
 
+const verDetalles = (id) => {
+    navigateTo(`/dashboard/${id}`);
+}
+
 const openImage = (url) => {
     imagenAmpliada.value = url;
 };
 
 onMounted(() => {
-    fetchData();
+    loadCars();
 });
 </script>

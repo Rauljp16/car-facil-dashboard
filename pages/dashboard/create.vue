@@ -80,7 +80,7 @@
 
                 <!-- Vista previa -->
                 <div class="flex flex-wrap gap-2 mt-4 w-full">
-                    <div v-for="(url, index) in imagenes" :key="index"
+                    <div v-for="(url, index) in images" :key="index"
                         class="w-24 h-24 rounded overflow-hidden border border-neutral-300">
                         <img :src="url" class="w-full h-full object-cover" />
                     </div>
@@ -96,6 +96,11 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useApi } from '../../composables/useApi'
+import { useCars } from '../../composables/useCars'
+
+const { post } = useApi()
+const { refreshCars } = useCars()
 
 const marca = ref('')
 const modelo = ref('')
@@ -108,41 +113,57 @@ const puertas = ref('')
 const motor = ref('')
 const plazas = ref('')
 const km = ref('')
-const imagenes = ref([])
+const images = ref([])
 
 const atras = () => {
     navigateTo('/dashboard')
 }
 
-// SUBIR IMÁGENES A CLOUDINARY CON FETCH
+// SUBIR IMÁGENES A CLOUDINARY
 const uploadToCloudinary = async (event) => {
     const files = Array.from(event.target.files)
 
     for (const file of files) {
         const formData = new FormData()
         formData.append('file', file)
-        formData.append('upload_preset', 'TU_UPLOAD_PRESET') // ← cambia esto
-        formData.append('cloud_name', 'TU_CLOUD_NAME')       // ← cambia esto
+        formData.append('upload_preset', 'webp_auto')
+        formData.append('cloud_name', 'de3x73klh')
 
         try {
             const response = await fetch(
-                'https://api.cloudinary.com/v1_1/TU_CLOUD_NAME/image/upload',
+                'https://api.cloudinary.com/v1_1/de3x73klh/image/upload',
                 {
                     method: 'POST',
                     body: formData
                 }
             )
             const data = await response.json()
-            imagenes.value.push(data.secure_url)
+            images.value.push(data.secure_url)
         } catch (error) {
             console.error('Error al subir imagen:', error)
         }
     }
 }
 
-// ENVÍO DE DATOS DEL FORMULARIO (INCLUYE IMÁGENES)
+// FUNCIÓN PARA RESETEAR TODOS LOS CAMPOS
+const resetForm = () => {
+    marca.value = ''
+    modelo.value = ''
+    Combustible.value = ''
+    Cambio.value = ''
+    anio.value = ''
+    cv.value = ''
+    precio.value = ''
+    puertas.value = ''
+    motor.value = ''
+    plazas.value = ''
+    km.value = ''
+    images.value = []
+}
+
+// ENVÍO DE DATOS DEL FORMULARIO
 const createCar = async () => {
-    const cocheData = {
+    const carData = {
         marca: marca.value,
         modelo: modelo.value,
         combustible: Combustible.value,
@@ -154,19 +175,13 @@ const createCar = async () => {
         motor: motor.value,
         plazas: plazas.value,
         km: km.value,
-        imagenes: imagenes.value, // array de URLs
+        images: images.value,
     }
 
     try {
-        await fetch('https://api.example.com/cars', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                // Authorization: `Bearer ${getToken()}`
-            },
-            body: JSON.stringify(cocheData)
-        })
-
+        await post('/coches', carData)
+        resetForm()
+        await refreshCars()
         navigateTo('/dashboard')
     } catch (error) {
         console.error('Error al crear coche:', error)
