@@ -90,8 +90,12 @@
                 <!-- Vista previa -->
                 <div class="flex flex-wrap gap-2 mt-4 w-full">
                     <div v-for="(url, index) in images" :key="index"
-                        class="w-24 h-24 rounded overflow-hidden border border-neutral-300">
+                        class="w-24 h-24 rounded overflow-hidden border border-neutral-300 relative">
                         <img :src="url" class="w-full h-full object-cover" />
+                        <div @click="deleteImage(index)"
+                            class="absolute h-4 w-4 p-[1px] bg-white/90 rounded top-1 right-1">
+                            <img src="/public/svg/delete.svg" class="w-full h-full object-cover cursor-pointer" />
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="w-2/3 bg-blue-500 rounded py-2 text-white">
@@ -111,6 +115,19 @@
                     guardar</button>
                 <button @click="cancelNoChanges"
                     class="px-4 py-2 rounded bg-neutral-200 text-neutral-700 font-semibold hover:bg-neutral-300 transition">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para errores de validación -->
+    <div v-if="showErrorModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full text-center">
+            <p class="mb-6 text-lg text-neutral-800 font-semibold">{{ errorMessage }}</p>
+            <div class="flex justify-center">
+                <button @click="closeErrorModal"
+                    class="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
+                    Aceptar
+                </button>
             </div>
         </div>
     </div>
@@ -141,6 +158,8 @@ const km = ref('');
 const images = ref([]);
 const originalCar = ref({});
 const showNoChangesModal = ref(false);
+const showErrorModal = ref(false);
+const errorMessage = ref('');
 let pendingNoChangesAction = null;
 
 const atras = () => {
@@ -179,7 +198,7 @@ onMounted(async () => {
         cambio.value = car.cambio || '';
         anio.value = Number(car.anio) || 0;
         cv.value = Number(car.cv) || 0;
-        precio.value = car.precio !== undefined && car.precio !== null ? String(car.precio) : '';
+        precio.value = car.precio?.toString() || '';
         puertas.value = Number(car.puertas) || 0;
         motor.value = Number(car.motor) || 0;
         plazas.value = Number(car.plazas) || 0;
@@ -193,7 +212,7 @@ onMounted(async () => {
             cambio: car.cambio,
             anio: Number(car.anio),
             cv: Number(car.cv),
-            precio: car.precio !== undefined && car.precio !== null ? String(car.precio) : '',
+            precio: car.precio?.toString(),
             puertas: Number(car.puertas),
             motor: Number(car.motor),
             plazas: Number(car.plazas),
@@ -214,6 +233,9 @@ const isEqual = (a, b) => {
             for (let i = 0; i < a.images.length; i++) {
                 if (a.images[i] !== b.images[i]) return false;
             }
+        } else if (key === 'precio') {
+            // Para el precio, comparamos los valores como strings
+            if (String(a.precio) !== String(b.precio)) return false;
         } else {
             if (a[key] !== b[key]) return false;
         }
@@ -229,39 +251,67 @@ const editCar = async () => {
         cambio: cambio.value,
         anio: Number(anio.value),
         cv: Number(cv.value),
-        precio: precio.value,
+        precio: precio.value.replace('.', ''),
         puertas: Number(puertas.value),
         motor: Number(motor.value),
         plazas: Number(plazas.value),
         km: Number(km.value),
         images: images.value,
     };
+
+    // Validación de campos vacíos o cero
+    const validaciones = [
+        { campo: 'marca', valor: marca.value, tipo: 'texto' },
+        { campo: 'modelo', valor: modelo.value, tipo: 'texto' },
+        { campo: 'combustible', valor: combustible.value, tipo: 'texto' },
+        { campo: 'cambio', valor: cambio.value, tipo: 'texto' },
+        { campo: 'año', valor: anio.value, tipo: 'numero' },
+        { campo: 'CV', valor: cv.value, tipo: 'numero' },
+        { campo: 'precio', valor: precio.value, tipo: 'texto' },
+        { campo: 'puertas', valor: puertas.value, tipo: 'numero' },
+        { campo: 'motor', valor: motor.value, tipo: 'numero' },
+        { campo: 'plazas', valor: plazas.value, tipo: 'numero' },
+        { campo: 'KM', valor: km.value, tipo: 'numero' }
+    ];
+
+    for (const validacion of validaciones) {
+        if (validacion.tipo === 'texto') {
+            if (!validacion.valor || validacion.valor.trim() === '') {
+                errorMessage.value = `El campo ${validacion.campo} no puede estar vacío`;
+                showErrorModal.value = true;
+                return;
+            }
+        } else if (validacion.tipo === 'numero') {
+            if (!validacion.valor || validacion.valor <= 0) {
+                errorMessage.value = `El campo ${validacion.campo} debe ser mayor que 0`;
+                showErrorModal.value = true;
+                return;
+            }
+        }
+    }
+
+    // Validación de imágenes
+    if (images.value.length === 0) {
+        errorMessage.value = 'Debes seleccionar al menos una imagen';
+        showErrorModal.value = true;
+        return;
+    }
+
     // Si no hay cambios, mostrar modal antes de navegar
     if (isEqual(carData, originalCar.value)) {
         showNoChangesModal.value = true;
         pendingNoChangesAction = () => router.push('/dashboard');
         return;
     }
-    // Validación manual solo si hay cambios
-    for (const [key, value] of Object.entries(carData)) {
-        if (
-            (typeof value === 'string' && value.trim() === '') ||
-            value === null ||
-            value === undefined ||
-            (typeof value === 'number' && isNaN(value)) ||
-            (Array.isArray(value) && value.length === 0)
-        ) {
-            alert('Por favor, completa todos los campos antes de guardar.');
-            return;
-        }
-    }
+
     try {
         await put(`/coches/${route.params.id}`, carData);
         await refreshCars();
         router.push('/dashboard');
     } catch (error) {
         console.error('Error al editar coche:', error);
-        alert('Error al editar coche');
+        errorMessage.value = 'Error al editar coche';
+        showErrorModal.value = true;
     }
 };
 
@@ -272,6 +322,15 @@ const confirmNoChanges = () => {
 const cancelNoChanges = () => {
     showNoChangesModal.value = false;
     pendingNoChangesAction = null;
+};
+
+const deleteImage = (index) => {
+    images.value.splice(index, 1);
+};
+
+const closeErrorModal = () => {
+    showErrorModal.value = false;
+    errorMessage.value = '';
 };
 </script>
 
