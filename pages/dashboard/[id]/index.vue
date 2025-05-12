@@ -96,11 +96,26 @@
                 </p>
                 <div class="flex gap-4 justify-center">
                     <button @click="confirmDelete"
-                        class="px-4 py-2 rounded bg-red-600 text-white font-semibold hover:bg-red-700 transition">Sí,
-                        eliminar</button>
+                        class="px-4 py-2 rounded bg-red-600 text-white font-semibold hover:bg-red-700 transition"
+                        :disabled="isDeleting">
+                        {{ isDeleting ? 'Eliminando...' : 'Sí, eliminar' }}
+                    </button>
                     <button @click="cancelDelete"
-                        class="px-4 py-2 rounded bg-neutral-200 text-neutral-700 font-semibold hover:bg-neutral-300 transition">Cancelar</button>
+                        class="px-4 py-2 rounded bg-neutral-200 text-neutral-700 font-semibold hover:bg-neutral-300 transition"
+                        :disabled="isDeleting">
+                        Cancelar
+                    </button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Overlay de carga -->
+        <div v-if="isDeleting" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div class="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+                <p class="text-lg text-neutral-800 font-semibold">
+                    Eliminando coche...
+                </p>
             </div>
         </div>
     </div>
@@ -120,6 +135,7 @@ const { refreshCars } = useCars();
 const car = ref(null);
 const imagenAmpliada = ref(null);
 const showDeleteModal = ref(false);
+const isDeleting = ref(false);
 let pendingDeleteAction = null;
 
 const atras = () => {
@@ -137,6 +153,7 @@ const editarCoche = () => {
 const eliminarCoche = () => {
     showDeleteModal.value = true;
     pendingDeleteAction = async () => {
+        isDeleting.value = true;
         try {
             await del(`/coches/${route.params.id}`);
             await refreshCars();
@@ -144,6 +161,8 @@ const eliminarCoche = () => {
         } catch (error) {
             console.error('Error al eliminar el coche:', error);
             alert('Error al eliminar el coche');
+        } finally {
+            isDeleting.value = false;
         }
     };
 };

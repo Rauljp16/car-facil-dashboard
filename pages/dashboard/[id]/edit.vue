@@ -79,7 +79,7 @@
                             style="font-size:200px;" />
                         <button type="button" @click="$refs.fileInput.click()"
                             class="w-full p-2 rounded border border-blue-500 bg-blue-50 text-blue-700 font-semibold hover:bg-blue-100 transition-colors cursor-pointer relative z-0">
-                            Seleccionar imágenes
+                            {{ isUploading ? 'Subiendo imágenes...' : 'Seleccionar imágenes' }}
                         </button>
                     </div>
                     <div v-if="images.length > 0" class="text-xs text-neutral-500 mt-1">
@@ -98,8 +98,8 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="w-2/3 bg-blue-500 rounded py-2 text-white">
-                    Guardar cambios
+                <button type="submit" class="w-2/3 bg-blue-500 rounded py-2 text-white" :disabled="isSaving">
+                    {{ isSaving ? 'Guardando cambios...' : 'Guardar cambios' }}
                 </button>
             </form>
         </div>
@@ -129,6 +129,17 @@
                     Aceptar
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Overlay de carga -->
+    <div v-if="isUploading || isSaving"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p class="text-lg text-neutral-800 font-semibold">
+                {{ isUploading ? 'Subiendo imágenes...' : 'Guardando cambios...' }}
+            </p>
         </div>
     </div>
 </template>
@@ -161,7 +172,8 @@ const originalCar = ref({});
 const showNoChangesModal = ref(false);
 const showErrorModal = ref(false);
 const errorMessage = ref('');
-let pendingNoChangesAction = null;
+const isUploading = ref(false);
+const isSaving = ref(false);
 
 const atras = () => {
     router.push('/dashboard');
@@ -169,11 +181,12 @@ const atras = () => {
 
 const uploadToCloudinary = async (event) => {
     const files = Array.from(event.target.files);
-    for (const file of files) {
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('upload_preset', cloudinaryUploadPreset)
-        try {
+    isUploading.value = true;
+    try {
+        for (const file of files) {
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('upload_preset', cloudinaryUploadPreset)
             const response = await fetch(
                 cloudinaryUrl,
                 {
@@ -183,9 +196,12 @@ const uploadToCloudinary = async (event) => {
             );
             const data = await response.json();
             images.value.push(data.secure_url);
-        } catch (error) {
-            console.error('Error al subir imagen:', error);
         }
+    } catch (error) {
+        errorMessage.value = 'Error al subir imagen';
+        showErrorModal.value = true;
+    } finally {
+        isUploading.value = false;
     }
 };
 
@@ -226,7 +242,6 @@ onMounted(async () => {
 });
 
 const isEqual = (a, b) => {
-    // Compara todos los campos excepto imágenes (que es un array)
     for (const key of Object.keys(a)) {
         if (key === 'images') {
             if (a.images.length !== b.images.length) return false;
@@ -234,8 +249,9 @@ const isEqual = (a, b) => {
                 if (a.images[i] !== b.images[i]) return false;
             }
         } else if (key === 'precio') {
-            // Para el precio, comparamos los valores como strings
-            if (String(a.precio) !== String(b.precio)) return false;
+            const precioA = Number(a.precio.toString().replace('.', ''));
+            const precioB = Number(b.precio.toString().replace('.', ''));
+            if (precioA !== precioB) return false;
         } else {
             if (a[key] !== b[key]) return false;
         }
@@ -251,13 +267,18 @@ const editCar = async () => {
         cambio: cambio.value,
         anio: Number(anio.value),
         cv: Number(cv.value),
-        precio: precio.value.replace('.', ''),
+        precio: precio.value,
         puertas: Number(puertas.value),
         motor: Number(motor.value),
         plazas: Number(plazas.value),
         km: Number(km.value),
         images: images.value,
     };
+
+    if (isEqual(carData, originalCar.value)) {
+        showNoChangesModal.value = true;
+        return;
+    }
 
     // Validación de campos vacíos o cero
     const validaciones = [
@@ -290,38 +311,35 @@ const editCar = async () => {
         }
     }
 
-    // Validación de imágenes
     if (images.value.length === 0) {
         errorMessage.value = 'Debes seleccionar al menos una imagen';
         showErrorModal.value = true;
         return;
     }
 
-    // Si no hay cambios, mostrar modal antes de navegar
-    if (isEqual(carData, originalCar.value)) {
-        showNoChangesModal.value = true;
-        pendingNoChangesAction = () => router.push('/dashboard');
-        return;
-    }
-
+    isSaving.value = true;
     try {
-        await put(`/coches/${route.params.id}`, carData);
+        await put(`/coches/${route.params.id}`, {
+            ...carData,
+            precio: carData.precio.replace('.', '')
+        });
         await refreshCars();
         router.push('/dashboard');
     } catch (error) {
-        console.error('Error al editar coche:', error);
         errorMessage.value = 'Error al editar coche';
         showErrorModal.value = true;
+    } finally {
+        isSaving.value = false;
     }
 };
 
 const confirmNoChanges = () => {
     showNoChangesModal.value = false;
-    if (pendingNoChangesAction) pendingNoChangesAction();
+    router.push('/dashboard');
 };
+
 const cancelNoChanges = () => {
     showNoChangesModal.value = false;
-    pendingNoChangesAction = null;
 };
 
 const deleteImage = (index) => {
@@ -345,5 +363,25 @@ input[type="file"]::file-selector-button {
 
 input[type="file"] {
     color: transparent;
+}
+
+/* Asegurar que los botones de submit no hereden estilos del input file */
+button[type="submit"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+/* Asegurar que el input file no afecte a otros elementos */
+input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
 }
 </style>
