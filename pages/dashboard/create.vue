@@ -98,6 +98,7 @@
 import { ref } from 'vue'
 import { useApi } from '../../composables/useApi'
 import { useCars } from '../../composables/useCars'
+const { cloudinaryUrl, cloudinaryUploadPreset, cloudinaryCloudName } = useRuntimeConfig().public;
 
 const { post } = useApi()
 const { refreshCars } = useCars()
@@ -126,12 +127,11 @@ const uploadToCloudinary = async (event) => {
     for (const file of files) {
         const formData = new FormData()
         formData.append('file', file)
-        formData.append('upload_preset', 'webp_auto')
-        formData.append('cloud_name', 'de3x73klh')
+        formData.append('upload_preset', cloudinaryUploadPreset)
 
         try {
             const response = await fetch(
-                'https://api.cloudinary.com/v1_1/de3x73klh/image/upload',
+                cloudinaryUrl,
                 {
                     method: 'POST',
                     body: formData
