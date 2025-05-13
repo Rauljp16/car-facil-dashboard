@@ -181,6 +181,7 @@ const route = useRoute();
 const router = useRouter();
 const { get, put } = useApi();
 const { refreshCars } = useCars();
+const fileInput = ref(null);
 
 const marca = ref('');
 const modelo = ref('');
@@ -200,6 +201,10 @@ const showErrorModal = ref(false);
 const errorMessage = ref('');
 const isUploading = ref(false);
 const isSaving = ref(false);
+
+const triggerFileInput = () => {
+    fileInput.value.click();
+};
 
 const atras = () => {
     router.push('/dashboard');
