@@ -1,104 +1,129 @@
 <template>
     <section class="w-full min-h-screen bg-neutral-100 p-4">
-        <div class="w-full flex flex-col gap-4 bg-white p-4">
-            <div class="relative">
-                <h1 class="text-2xl font-semibold text-center py-2">
+        <div class="w-full flex flex-col gap-1 bg-white p-4">
+            <div class="relative w-full">
+                <h1 class="text-2xl font-semibold text-center py-2 w-full">
                     Editar coche
                 </h1>
-                <img src="/svg/back.svg" @click="atras" class="absolute top-0 right-0 w-5 cursor-pointer" />
+                <img src="/svg/back.svg" @click="atras" class="absolute top-0 right-0 w-5 h-5 cursor-pointer" />
             </div>
-            <form @submit.prevent="editCar" class="flex flex-col gap-4 items-center">
+            <form @submit.prevent="editCar" class="flex flex-col gap-4 items-center w-full">
+                <!-- Inputs grandes (marca y modelo) -->
                 <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">Marca</label>
+                    <label class="block mb-1 text-sm pl-1 w-full">Marca</label>
                     <input v-model="marca" type="text" placeholder="Marca..."
-                        class="w-full p-2 rounded border border-neutral-300" />
+                        class="w-full h-10 p-2 rounded border border-neutral-300" />
                 </div>
                 <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">Modelo</label>
+                    <label class="block mb-1 text-sm pl-1 w-full">Modelo</label>
                     <input v-model="modelo" type="text" placeholder="Modelo..."
-                        class="w-full p-2 rounded border border-neutral-300" />
+                        class="w-full h-10 p-2 rounded border border-neutral-300" />
                 </div>
+
+                <!-- Precio (input grande) -->
                 <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">Combustible</label>
-                    <select v-model="combustible" class="w-full p-2 rounded border border-neutral-300">
-                        <option disabled value="">Selecciona combustible</option>
-                        <option value="Diésel">Diésel</option>
-                        <option value="Gasolina">Gasolina</option>
-                        <option value="Híbrido">Híbrido</option>
-                        <option value="Eléctrico">Eléctrico</option>
-                    </select>
-                </div>
-                <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">Cambio</label>
-                    <select v-model="cambio" class="w-full p-2 rounded border border-neutral-300">
-                        <option disabled value="">Selecciona Cambio</option>
-                        <option value="Manual">Manual</option>
-                        <option value="Automático">Automático</option>
-                    </select>
-                </div>
-                <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">Año</label>
-                    <input v-model.number="anio" type="number" placeholder="Año..."
-                        class="w-full p-2 rounded border border-neutral-300" />
-                </div>
-                <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">CV</label>
-                    <input v-model.number="cv" type="number" placeholder="CV..."
-                        class="w-full p-2 rounded border border-neutral-300" />
-                </div>
-                <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">Precio</label>
+                    <label class="block mb-1 text-sm pl-1 w-full">Precio</label>
                     <input v-model="precio" type="text" placeholder="Precio..."
-                        class="w-full p-2 rounded border border-neutral-300" />
+                        class="w-full h-10 p-2 rounded border border-neutral-300" />
                 </div>
-                <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">Puertas</label>
-                    <input v-model.number="puertas" type="number" placeholder="Puertas..."
-                        class="w-full p-2 rounded border border-neutral-300" />
+
+                <!-- Grid de dos columnas para inputs pequeños -->
+                <div class="grid grid-cols-2 gap-4 w-full">
+                    <!-- Motor y CV -->
+                    <div>
+                        <label class="block mb-1 text-sm pl-1 w-full">Motor</label>
+                        <input v-model.number="motor" type="number" placeholder="Motor..."
+                            class="w-full h-10 p-2 rounded border border-neutral-300" />
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-sm pl-1 w-full">CV</label>
+                        <input v-model.number="cv" type="number" placeholder="CV..."
+                            class="w-full h-10 p-2 rounded border border-neutral-300" />
+                    </div>
+
+                    <!-- KM y Año -->
+                    <div>
+                        <label class="block mb-1 text-sm pl-1 w-full">KM</label>
+                        <input v-model.number="km" type="number" placeholder="KM..."
+                            class="w-full h-10 p-2 rounded border border-neutral-300" />
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-sm pl-1 w-full">Año</label>
+                        <input v-model.number="anio" type="number" placeholder="Año..."
+                            class="w-full h-10 p-2 rounded border border-neutral-300" />
+                    </div>
+
+                    <!-- Combustible y Cambio -->
+                    <div>
+                        <label class="block mb-1 text-sm pl-1 w-full">Combustible</label>
+                        <div class="select-container">
+                            <select v-model="combustible" class="w-full h-10 p-2 rounded border border-neutral-300">
+                                <option value="Diésel">Diésel</option>
+                                <option value="Gasolina">Gasolina</option>
+                                <option value="Híbrido">Híbrido</option>
+                                <option value="Eléctrico">Eléctrico</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-sm pl-1 w-full">Cambio</label>
+                        <div class="select-container">
+                            <select v-model="cambio" class="w-full h-10 p-2 rounded border border-neutral-300">
+                                <option value="Manual">Manual</option>
+                                <option value="Automático">Automático</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Puertas y Plazas -->
+                    <div>
+                        <label class="block mb-1 text-sm pl-1 w-full">Puertas</label>
+                        <div class="select-container">
+                            <select v-model="puertas" class="w-full h-10 p-2 rounded border border-neutral-300">
+                                <option v-for="n in 9" :key="n" :value="n + 1">{{ n + 1 }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-sm pl-1 w-full">Plazas</label>
+                        <div class="select-container">
+                            <select v-model="plazas" class="w-full h-10 p-2 rounded border border-neutral-300">
+                                <option v-for="n in 9" :key="n" :value="n + 1">{{ n + 1 }}</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Imágenes -->
                 <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">Motor</label>
-                    <input v-model.number="motor" type="number" placeholder="Motor..."
-                        class="w-full p-2 rounded border border-neutral-300" />
-                </div>
-                <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">Plazas</label>
-                    <input v-model.number="plazas" type="number" placeholder="Plazas..."
-                        class="w-full p-2 rounded border border-neutral-300" />
-                </div>
-                <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">KM</label>
-                    <input v-model.number="km" type="number" placeholder="KM..."
-                        class="w-full p-2 rounded border border-neutral-300" />
-                </div>
-                <div class="w-full">
-                    <label class="block mb-1 text-sm pl-1">Imágenes</label>
-                    <div class="relative">
+                    <label class="block mb-1 text-sm pl-1 w-full">Imágenes</label>
+                    <div class="relative w-full h-10">
                         <input ref="fileInput" type="file" accept="image/*" multiple @change="uploadToCloudinary"
                             class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             style="font-size:200px;" />
-                        <button type="button" @click="$refs.fileInput.click()"
-                            class="w-full p-2 rounded border border-blue-500 bg-blue-50 text-blue-700 font-semibold hover:bg-blue-100 transition-colors cursor-pointer relative z-0">
+                        <button type="button" @click="triggerFileInput"
+                            class="w-full h-full p-2 rounded border border-blue-500 bg-blue-50 text-blue-700 font-semibold hover:bg-blue-100 transition-colors cursor-pointer relative z-0">
                             {{ isUploading ? 'Subiendo imágenes...' : 'Seleccionar imágenes' }}
                         </button>
                     </div>
-                    <div v-if="images.length > 0" class="text-xs text-neutral-500 mt-1">
+                    <div v-if="images.length > 0" class="text-xs text-neutral-500 mt-1 w-full">
                         {{ images.length }} imagen{{ images.length === 1 ? '' : 'es' }} seleccionada{{ images.length ===
                             1 ? '' : 's' }}
                     </div>
                 </div>
+
                 <!-- Vista previa -->
-                <div class="flex flex-wrap gap-2 mt-4 w-full">
+                <div class="flex flex-wrap gap-2 mt-4 w-full justify-center">
                     <div v-for="(url, index) in images" :key="index"
                         class="w-24 h-24 rounded overflow-hidden border border-neutral-300 relative">
                         <img :src="url" class="w-full h-full object-cover" />
-                        <div @click="deleteImage(index)"
-                            class="absolute h-4 w-4 p-[1px] bg-white/90 rounded top-1 right-1">
+                        <div @click="deleteImage(index)" class="absolute h-5 w-5 bg-white/90 rounded top-1 right-1">
                             <img src="/public/svg/delete.svg" class="w-full h-full object-cover cursor-pointer" />
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="w-2/3 bg-blue-500 rounded py-2 text-white" :disabled="isSaving">
+
+                <button type="submit" class="w-2/3 h-10 bg-blue-500 rounded py-2 text-white" :disabled="isSaving">
                     {{ isSaving ? 'Guardando cambios...' : 'Guardar cambios' }}
                 </button>
             </form>
@@ -107,14 +132,15 @@
     <!-- Modal para confirmar guardar sin cambios -->
     <div v-if="showNoChangesModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
         <div class="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full text-center">
-            <p class="mb-6 text-lg text-neutral-800 font-semibold">No has realizado ningún cambio.<br>¿Deseas guardar
+            <p class="mb-6 text-lg text-neutral-800 font-semibold w-full">No has realizado ningún cambio.<br>¿Deseas
+                guardar
                 igualmente?</p>
-            <div class="flex gap-4 justify-center">
+            <div class="flex gap-4 justify-center w-full">
                 <button @click="confirmNoChanges"
-                    class="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Sí,
+                    class="px-4 py-2 h-10 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Sí,
                     guardar</button>
                 <button @click="cancelNoChanges"
-                    class="px-4 py-2 rounded bg-neutral-200 text-neutral-700 font-semibold hover:bg-neutral-300 transition">Cancelar</button>
+                    class="px-4 py-2 h-10 rounded bg-neutral-200 text-neutral-700 font-semibold hover:bg-neutral-300 transition">Cancelar</button>
             </div>
         </div>
     </div>
@@ -122,10 +148,10 @@
     <!-- Modal para errores de validación -->
     <div v-if="showErrorModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
         <div class="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full text-center">
-            <p class="mb-6 text-lg text-neutral-800 font-semibold">{{ errorMessage }}</p>
-            <div class="flex justify-center">
+            <p class="mb-6 text-lg text-neutral-800 font-semibold w-full">{{ errorMessage }}</p>
+            <div class="flex justify-center w-full">
                 <button @click="closeErrorModal"
-                    class="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
+                    class="px-4 py-2 h-10 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
                     Aceptar
                 </button>
             </div>
@@ -137,7 +163,7 @@
         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
         <div class="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full text-center">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p class="text-lg text-neutral-800 font-semibold">
+            <p class="text-lg text-neutral-800 font-semibold w-full">
                 {{ isUploading ? 'Subiendo imágenes...' : 'Guardando cambios...' }}
             </p>
         </div>
@@ -371,6 +397,7 @@ button[type="submit"] {
     -moz-appearance: none;
     appearance: none;
     cursor: pointer;
+    min-height: 40px;
 }
 
 /* Asegurar que el input file no afecte a otros elementos */
@@ -383,5 +410,88 @@ input[type="file"] {
     opacity: 0;
     cursor: pointer;
     z-index: 10;
+}
+
+/* Asegurar que los inputs y selects tengan altura consistente */
+input,
+select {
+    min-height: 40px;
+    box-sizing: border-box;
+}
+
+/* Asegurar que los botones tengan altura consistente */
+button {
+    min-height: 40px;
+    box-sizing: border-box;
+}
+
+/* Estilos para los select */
+.select-container {
+    position: relative;
+    width: 100%;
+}
+
+select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: white;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #374151;
+}
+
+select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Estilos específicos para Safari */
+@supports (-webkit-touch-callout: none) {
+
+    /* Estilo del select principal */
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 1em;
+        padding-right: 2.5em;
+    }
+
+    /* Estilo del menú desplegable */
+    select:focus {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 400px;
+    }
+
+    /* Estilo de las opciones del menú */
+    select option {
+        padding: 12px;
+        background-color: white;
+        color: #374151;
+        text-align: left;
+    }
+}
+
+/* Estilos para las opciones del select */
+select option {
+    padding: 8px 12px;
+    background-color: white;
+    color: #374151;
+}
+
+/* Asegurar que el contenedor del select tenga posición relativa */
+.select-container {
+    position: relative;
+    width: 100%;
 }
 </style>

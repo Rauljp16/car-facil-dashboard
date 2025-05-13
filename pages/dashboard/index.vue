@@ -1,5 +1,5 @@
 <template>
-    <div class="px-4 w-full min-h-screen bg-neutral-100">
+    <div class="p-4 pt-0 w-full min-h-screen bg-neutral-100">
         <h1 class="text-2xl py-4 pb-0 font-semibold">Lista de coches</h1>
 
         <div class="w-full pt-4 pb-6 flex items-center justify-between">
@@ -13,29 +13,30 @@
 
         <section class="flex flex-col gap-4">
             <article v-for="coche in cochesFiltrados" :key="coche.id"
-                class="flex w-full h-24 bg-white items-center justify-between gap-2 my-0 p-2 rounded shadow-sm shadow-neutral-500 cursor-pointer hover:bg-neutral-50 transition-colors"
+                class="flex w-full h-24 bg-white items-center gap-2 my-0 p-2 rounded shadow-sm shadow-neutral-500 cursor-pointer hover:bg-neutral-50 transition-colors"
                 @click="verDetalles(coche.id)">
-                <div class="w-28 h-20" @click.stop>
-                    <img :src="coche.images[0]" alt="Imagen del coche" class="w-full h-full rounded cursor-pointer"
-                        @click="openImage(coche.images[0])" />
+                <div class="w-1/3 h-full" @click.stop>
+                    <img :src="coche.images[0]" alt="Imagen del coche"
+                        class="w-full h-full object-cover rounded cursor-pointer" @click="openImage(coche.images[0])" />
                 </div>
-
-                <div class="flex items-center justify-between">
-                    <h2 class="font-semibold text-green-600">{{ coche.marca }} {{ coche.modelo }}</h2>
-                    <p class="text-sm text-red-500">{{ coche.precio }} €</p>
-                </div>
-                <div class="w-full flex gap-4">
-                    <div class="flex gap-[2px]">
-                        <img src="/svg/calendar.svg" alt="svg de calendario" class="w-4" />
-                        <p class="text-sm">{{ coche.anio }}</p>
+                <div class="w-full h-full flex flex-col justify-between pb-2">
+                    <div class="flex items-center justify-between">
+                        <p class="font-semibold text-green-600">{{ coche.marca }} {{ coche.modelo }}</p>
+                        <p class="text-red-500 min-w-fit mb-auto">{{ coche.precio }} €</p>
                     </div>
-                    <div class="flex gap-[2px]">
-                        <img src="/svg/kmBlack.svg" alt="svg de calendario" class="w-4" />
-                        <p class="text-sm">{{ coche.km.toLocaleString() }}</p>
-                    </div>
-                    <div class="flex gap-[2px]">
-                        <img src="/svg/bolt.svg" alt="svg de calendario" class="w-4" />
-                        <p class="text-sm">{{ formatNumber.format(Number(coche.motor)) }}</p>
+                    <div class="w-full flex justify-between">
+                        <div class="flex gap-[2px]">
+                            <img src="/svg/calendar.svg" alt="svg de calendario" class="w-4" />
+                            <p>{{ coche.anio }}</p>
+                        </div>
+                        <div class="flex gap-[2px]">
+                            <img src="/svg/kmBlack.svg" alt="svg de calendario" class="w-4" />
+                            <p>{{ coche.km.toLocaleString() }}</p>
+                        </div>
+                        <div class="flex gap-[2px]">
+                            <img src="/svg/bolt.svg" alt="svg de calendario" class="w-4" />
+                            <p>{{ formatNumber.format(Number(coche.motor)) }}</p>
+                        </div>
                     </div>
                 </div>
             </article>

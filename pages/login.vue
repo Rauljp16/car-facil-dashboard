@@ -16,11 +16,21 @@
                         :class="['w-full px-3 py-2 border rounded', error && 'border-red-500']" required />
                 </div>
 
-                <button type="submit" class="w-2/3 bg-red-500 text-white py-2 rounded">
-                    Entrar
+                <button type="submit" class="w-2/3 bg-red-500 text-white py-2 rounded" :disabled="isLoading">
+                    {{ isLoading ? 'Iniciando sesión...' : 'Entrar' }}
                 </button>
                 <div v-if="error" class="text-red-500 text-sm">{{ error }}</div>
             </form>
+        </div>
+    </div>
+
+    <!-- Overlay de carga -->
+    <div v-if="isLoading" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+            <p class="text-lg text-neutral-800 font-semibold">
+                Iniciando sesión...
+            </p>
         </div>
     </div>
 </template>
@@ -29,17 +39,35 @@
 const email = ref("");
 const password = ref("");
 const error = ref("");
+const isLoading = ref(false);
 const { login } = useAuth();
 
 const handleLogin = async () => {
     try {
         error.value = "";
+        isLoading.value = true;
         const success = await login(email.value, password.value);
         if (success) {
             navigateTo("/dashboard");
         }
     } catch (err) {
         error.value = "rellena los campos correctamente";
+    } finally {
+        isLoading.value = false;
     }
 };
 </script>
+
+<style scoped>
+button[type="submit"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+button[type="submit"]:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+</style>

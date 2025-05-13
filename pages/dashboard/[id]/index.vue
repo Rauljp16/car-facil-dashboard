@@ -1,15 +1,15 @@
 <template>
-    <div class="w-full min-h-screen bg-neutral-100">
+    <div class="w-full bg-neutral-100">
         <div v-if="car" class="w-full bg-white p-4 shadow-sm">
             <!-- Header with back button -->
             <div class="relative mb-6">
-                <h1 class="text-2xl font-semibold text-center">{{ car.marca }} {{ car.modelo }}</h1>
+                <h1 class="text-2xl font-bold">{{ car.marca }} {{ car.modelo }}</h1>
                 <img src="/svg/back.svg" @click="atras" class="absolute top-0 right-0 w-5 cursor-pointer" />
             </div>
 
             <!-- Galería de miniaturas -->
-            <div class="mb-6">
-                <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+            <div class="mb-4">
+                <div class="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 gap-2">
                     <div v-for="(image, index) in car.images" :key="index"
                         class="aspect-square rounded overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
                         @click="openImage(image)">
@@ -20,7 +20,7 @@
             </div>
 
             <!-- Datos del coche en tarjeta estética sin iconos externos -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-8 max-w-2xl mx-auto">
+            <div class="bg-white rounded-xl shadow-md px-4 mb-4 max-w-2xl mx-auto">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
                     <div>
                         <h2 class="text-2xl font-bold mb-1">{{ car.marca }} {{ car.modelo }}</h2>
@@ -59,13 +59,10 @@
                         <span class="font-semibold ml-1">{{ car.plazas }}</span>
                     </div>
                 </div>
-                <div v-if="car.descripcion" class="mt-6 text-neutral-700">
-                    <span class="font-semibold">Descripción:</span> {{ car.descripcion }}
-                </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="mt-8 flex gap-4 justify-center">
+            <div class="flex gap-4 justify-center">
                 <button @click="editarCoche"
                     class="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
                     Editar

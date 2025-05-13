@@ -1,5 +1,5 @@
 <template>
-    <section class="w-full h-screen bg-neutral-100 p-4">
+    <section class="w-full min-h-screen bg-pink-400 p-4">
         <div class="w-full flex flex-col gap-4 bg-white p-4">
             <div class="relative">
                 <h1 class="text-2xl font-semibold text-center py-2">
@@ -7,7 +7,7 @@
                 </h1>
                 <img src="/svg/back.svg" @click="atras" class="absolute top-0 right-0 w-5 cursor-pointer" />
             </div>
-            <form @submit.prevent="createCar" class="flex flex-col gap-4 items-center">
+            <form @submit.prevent="createCar" class="flex flex-col gap-4 items-center bg-green-300">
                 <div class="w-full">
                     <label class="block mb-1 text-sm pl-1">Marca</label>
                     <input v-model="marca" type="text" placeholder="Marca..."
@@ -72,7 +72,7 @@
                     <input v-model.number="km" type="number" placeholder="KM..."
                         class="w-full p-2 rounded border border-neutral-300" required />
                 </div>
-                <div class="w-full">
+                <div class="w-full bg-red-200">
                     <label class="block mb-1 text-sm pl-1">Imágenes</label>
                     <div class="relative">
                         <input type="file" accept="image/*" multiple @change="uploadToCloudinary"
@@ -90,7 +90,7 @@
                 </div>
 
                 <!-- Vista previa -->
-                <div class="flex flex-wrap gap-2 mt-4 w-full">
+                <div class="flex flex-wrap gap-2 mt-4 w-full bg-purple-400">
                     <div v-for="(url, index) in images" :key="index"
                         class="w-24 h-24 rounded overflow-hidden border border-neutral-300 relative">
                         <img :src="url" class="w-full h-full object-cover" />
