@@ -99,10 +99,9 @@
                     <label class="block mb-1 text-sm pl-1 w-full">Imágenes</label>
                     <div class="relative w-full h-10">
                         <input ref="fileInput" type="file" accept="image/*" multiple @change="uploadToCloudinary"
-                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            style="font-size:200px;" />
+                            class="hidden" />
                         <button type="button" @click="triggerFileInput"
-                            class="w-full h-full p-2 rounded border border-blue-500 bg-blue-50 text-blue-700 font-semibold hover:bg-blue-100 transition-colors cursor-pointer relative z-0">
+                            class="w-full h-full p-2 rounded border border-blue-500 bg-blue-50 text-blue-700 font-semibold hover:bg-blue-100 transition-colors cursor-pointer">
                             {{ isUploading ? 'Subiendo imágenes...' : 'Seleccionar imágenes' }}
                         </button>
                     </div>
@@ -115,10 +114,11 @@
                 <!-- Vista previa -->
                 <div class="flex flex-wrap gap-2 mt-4 w-full justify-center">
                     <div v-for="(url, index) in images" :key="index"
-                        class="w-24 h-24 rounded overflow-hidden border border-neutral-300 relative">
+                        class="w-24 h-24 rounded overflow-hidden border border-neutral-300 relative group">
                         <img :src="url" class="w-full h-full object-cover" />
-                        <div @click="deleteImage(index)" class="absolute h-5 w-5 bg-white/90 rounded top-1 right-1">
-                            <img src="/public/svg/delete.svg" class="w-full h-full object-cover cursor-pointer" />
+                        <div @click.stop="deleteImage(index)"
+                            class="absolute h-5 w-5 bg-white/90 rounded top-1 right-1 z-20 hover:bg-white transition-colors cursor-pointer">
+                            <img src="/public/svg/delete.svg" class="w-full h-full object-cover" />
                         </div>
                     </div>
                 </div>
